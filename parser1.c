@@ -130,16 +130,17 @@ PRIVATE void ParseBooleanExpression( void );
 
 PUBLIC int main ( int argc, char *argv[] )
 {
-    if ( OpenFiles( argc, argv ) )  {
-        InitCharProcessor( InputFile, ListFile );
-        CurrentToken = GetToken();
-        ParseProgram();
-        fclose( InputFile );
-        fclose( ListFile );
-        return  EXIT_SUCCESS;
-    }
-    else 
-        return EXIT_FAILURE;
+  if ( OpenFiles( argc, argv ) )
+  {
+    InitCharProcessor( InputFile, ListFile );
+    CurrentToken = GetToken();
+    ParseProgram();
+    fclose( InputFile );
+    fclose( ListFile );
+    return  EXIT_SUCCESS;
+  }
+  else 
+    return EXIT_FAILURE;
 }
 
 
@@ -318,23 +319,23 @@ PRIVATE void ParseFormalParameter( void )
 
 PRIVATE void ParseBlock( void ) 
 {
-	Accept( BEGIN );
-    /* implementation of Statement grammar as nothing else contains statements */
-	while (isaStatement(CurrentToken.code))
-    {
-		if ( CurrentToken.code == IDENTIFIER )
-			ParseSimpleStatement();
-		else if ( CurrentToken.code == WHILE )
-			ParseWhileStatement();
-		else if ( CurrentToken.code == IF )
-			ParseIfStatement();
-		else if ( CurrentToken.code == READ )
-			ParseReadStatement();
-		else 
-			ParseWriteStatement();
-		Accept( SEMICOLON );
-	}
-	Accept( END );
+  Accept( BEGIN );
+  /* implementation of Statement grammar as nothing else contains statements */
+  while (isaStatement(CurrentToken.code))
+  {
+    if ( CurrentToken.code == IDENTIFIER )
+      ParseSimpleStatement();
+    else if ( CurrentToken.code == WHILE )
+      ParseWhileStatement();
+    else if ( CurrentToken.code == IF )
+      ParseIfStatement();
+    else if ( CurrentToken.code == READ )
+      ParseReadStatement();
+    else 
+      ParseWriteStatement();
+    Accept( SEMICOLON );
+  }
+  Accept( END );
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -358,8 +359,8 @@ PRIVATE void ParseBlock( void )
 
 PRIVATE void ParseSimpleStatement( void )
 {
-	Accept( IDENTIFIER );
-	ParseRestOfStatement();
+  Accept( IDENTIFIER );
+  ParseRestOfStatement();
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -382,10 +383,10 @@ PRIVATE void ParseSimpleStatement( void )
 
 PRIVATE void ParseRestOfStatement( void )
 {
-	if ( CurrentToken.code == LEFTPARENTHESIS )
-		ParseProcCallList();
-	else if ( CurrentToken.code == ASSIGNMENT )
-		ParseAssignment();
+  if ( CurrentToken.code == LEFTPARENTHESIS )
+    ParseProcCallList();
+  else if ( CurrentToken.code == ASSIGNMENT )
+    ParseAssignment();
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -409,14 +410,14 @@ PRIVATE void ParseRestOfStatement( void )
 
 PRIVATE void ParseProcCallList( void )
 {
-	Accept( LEFTPARENTHESIS );
-	ParseActualParameter();
-	while ( CurrentToken.code == COMMA )
-    {
-		Accept( COMMA );
-		ParseActualParameter();
-	}
-	Accept( RIGHTPARENTHESIS );
+  Accept( LEFTPARENTHESIS );
+  ParseActualParameter();
+  while ( CurrentToken.code == COMMA )
+  {
+    Accept( COMMA );
+    ParseActualParameter();
+  }
+  Accept( RIGHTPARENTHESIS );
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -439,8 +440,8 @@ PRIVATE void ParseProcCallList( void )
 
 PRIVATE void ParseAssignment( void )
 {
-	Accept( ASSIGNMENT );
-	ParseExpression();
+  Accept( ASSIGNMENT );
+  ParseExpression();
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -463,10 +464,10 @@ PRIVATE void ParseAssignment( void )
 
 PRIVATE void ParseActualParameter( void )
 {
-	if ( CurrentToken.code == IDENTIFIER )
-      Accept( IDENTIFIER );
-	else
-		ParseExpression();
+  if ( CurrentToken.code == IDENTIFIER )
+    Accept( IDENTIFIER );
+  else
+    ParseExpression();
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -490,10 +491,10 @@ PRIVATE void ParseActualParameter( void )
 
 PRIVATE void ParseWhileStatement( void )
 {
-	Accept( WHILE );
-	ParseBooleanExpression();
-	Accept( DO );
-	ParseBlock();
+  Accept( WHILE );
+  ParseBooleanExpression();
+  Accept( DO );
+  ParseBlock();
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -517,15 +518,15 @@ PRIVATE void ParseWhileStatement( void )
 
 PRIVATE void ParseIfStatement( void )
 {
-	Accept( IF );
-	ParseBooleanExpression();
-	Accept( THEN );
-	ParseBlock();
-	if ( CurrentToken.code == ELSE )
-    {
-		Accept( ELSE );
-		ParseBlock();
-	}
+  Accept( IF );
+  ParseBooleanExpression();
+  Accept( THEN );
+  ParseBlock();
+  if ( CurrentToken.code == ELSE )
+  {
+    Accept( ELSE );
+    ParseBlock();
+  }
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -548,15 +549,15 @@ PRIVATE void ParseIfStatement( void )
 
 PRIVATE void ParseReadStatement( void )
 {
-	Accept( READ );
-	Accept( LEFTPARENTHESIS );
-	Accept( IDENTIFIER );
-	while ( CurrentToken.code == COMMA )
-    {
-		Accept( COMMA );
-		Accept( IDENTIFIER );
-	}
-	Accept( RIGHTPARENTHESIS );
+  Accept( READ );
+  Accept( LEFTPARENTHESIS );
+  Accept( IDENTIFIER );
+  while ( CurrentToken.code == COMMA )
+  {
+    Accept( COMMA );
+    Accept( IDENTIFIER );
+  }
+  Accept( RIGHTPARENTHESIS );
 }
 
 /*-----------------------------------------------------------------------------*/                                                                        
@@ -579,15 +580,15 @@ PRIVATE void ParseReadStatement( void )
 
 PRIVATE void ParseWriteStatement( void )
 {
-	Accept( WRITE );
-	Accept( LEFTPARENTHESIS );
-	ParseExpression();
-	while ( CurrentToken.code == COMMA )
-    {
-		Accept( COMMA );
-		ParseExpression();
-	}
-	Accept( RIGHTPARENTHESIS );
+  Accept( WRITE );
+  Accept( LEFTPARENTHESIS );
+  ParseExpression();
+  while ( CurrentToken.code == COMMA )
+  {
+    Accept( COMMA );
+    ParseExpression();
+  }
+  Accept( RIGHTPARENTHESIS );
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -610,16 +611,16 @@ PRIVATE void ParseWriteStatement( void )
 
 PRIVATE void ParseExpression( void )
 {
-	ParseCompoundTerm();
-	while ( CurrentToken.code == ADD || CurrentToken.code == SUBTRACT )
-	{
-      /* AddOp grammar */
-		if ( CurrentToken.code == ADD )
-			Accept( ADD );
-		else
-			Accept( SUBTRACT );
-		ParseCompoundTerm();
-	}
+  ParseCompoundTerm();
+  while ( CurrentToken.code == ADD || CurrentToken.code == SUBTRACT )
+  {
+    /* AddOp grammar */
+    if ( CurrentToken.code == ADD )
+      Accept( ADD );
+    else
+      Accept( SUBTRACT );
+    ParseCompoundTerm();
+  }
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -642,16 +643,16 @@ PRIVATE void ParseExpression( void )
 
 PRIVATE void ParseCompoundTerm( void )
 {
-	ParseTerm();
-	while ( CurrentToken.code == MULTIPLY || CurrentToken.code == DIVIDE )
-    {
-      /* MultOp grammar */
-		if ( CurrentToken.code == MULTIPLY )
-			Accept( MULTIPLY );
-		else
-			Accept( DIVIDE );
-		ParseTerm();
-	}
+  ParseTerm();
+  while ( CurrentToken.code == MULTIPLY || CurrentToken.code == DIVIDE )
+  {
+    /* MultOp grammar */
+    if ( CurrentToken.code == MULTIPLY )
+      Accept( MULTIPLY );
+    else
+      Accept( DIVIDE );
+    ParseTerm();
+  }
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -674,9 +675,9 @@ PRIVATE void ParseCompoundTerm( void )
 
 PRIVATE void ParseTerm( void )
 {
-	if ( CurrentToken.code == SUBTRACT )
-		Accept( SUBTRACT );
-	ParseSubTerm();
+  if ( CurrentToken.code == SUBTRACT )
+    Accept( SUBTRACT );
+  ParseSubTerm();
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -699,16 +700,16 @@ PRIVATE void ParseTerm( void )
 
 PRIVATE void ParseSubTerm( void )
 {
-	if ( CurrentToken.code == IDENTIFIER )
-		Accept( IDENTIFIER );
-	else if ( CurrentToken.code == INTCONST )
-		Accept( INTCONST );
-	else
-    {
-		Accept( LEFTPARENTHESIS );
-		ParseExpression();
-		Accept( RIGHTPARENTHESIS );
-	}
+  if ( CurrentToken.code == IDENTIFIER )
+    Accept( IDENTIFIER );
+  else if ( CurrentToken.code == INTCONST )
+    Accept( INTCONST );
+  else
+  {
+    Accept( LEFTPARENTHESIS );
+    ParseExpression();
+    Accept( RIGHTPARENTHESIS );
+  }
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
@@ -731,19 +732,19 @@ PRIVATE void ParseSubTerm( void )
 
 PRIVATE void ParseBooleanExpression( void )
 {
-	ParseExpression();
-    /* RelOp grammar */
-	if ( CurrentToken.code == EQUALITY )
-		Accept( EQUALITY );
-	else if ( CurrentToken.code == LESSEQUAL )
-		Accept( LESSEQUAL );
-	else if ( CurrentToken.code == LESS )
-		Accept( LESS );
-	else if ( CurrentToken.code == GREATER )
-      Accept( GREATER );
-	else 
-		Accept( GREATEREQUAL );
-	ParseExpression();
+  ParseExpression();
+  /* RelOp grammar */
+  if ( CurrentToken.code == EQUALITY )
+    Accept( EQUALITY );
+  else if ( CurrentToken.code == LESSEQUAL )
+    Accept( LESSEQUAL );
+  else if ( CurrentToken.code == LESS )
+    Accept( LESS );
+  else if ( CurrentToken.code == GREATER )
+    Accept( GREATER );
+  else 
+    Accept( GREATEREQUAL );
+  ParseExpression();
 }
 
 
@@ -780,15 +781,15 @@ PRIVATE void ParseBooleanExpression( void )
 
 PRIVATE void Accept( int ExpectedToken )
 {
-    if ( CurrentToken.code != ExpectedToken )
-    {
-        SyntaxError( ExpectedToken, CurrentToken );
-        ReadToEndOfFile();
-        fclose( InputFile );
-        fclose( ListFile );
-        exit( EXIT_FAILURE );
-    }
-    else  CurrentToken = GetToken();
+  if ( CurrentToken.code != ExpectedToken )
+  {
+    SyntaxError( ExpectedToken, CurrentToken );
+    ReadToEndOfFile();
+    fclose( InputFile );
+    fclose( ListFile );
+    exit( EXIT_FAILURE );
+  }
+  else  CurrentToken = GetToken();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -811,11 +812,11 @@ PRIVATE void Accept( int ExpectedToken )
 
 PRIVATE int isaStatement( int Token )
 {
-	if (Token == IDENTIFIER || Token == WHILE || Token == IF ||
-        Token == READ || Token == WRITE)
-		return 1;
-	else 
-		return 0;
+  if (Token == IDENTIFIER || Token == WHILE || Token == IF ||
+      Token == READ || Token == WRITE)
+    return 1;
+  else 
+    return 0;
 }
 
 
@@ -846,26 +847,26 @@ PRIVATE int isaStatement( int Token )
 PRIVATE int  OpenFiles( int argc, char *argv[] )
 {
 
-    if ( argc != 3 )
-    {
-        fprintf( stderr, "%s <inputfile> <listfile>\n", argv[0] );
-        return 0;
-    }
+  if ( argc != 3 )
+  {
+    fprintf( stderr, "%s <inputfile> <listfile>\n", argv[0] );
+    return 0;
+  }
 
-    if ( NULL == ( InputFile = fopen( argv[1], "r" ) ) )
-    {
-        fprintf( stderr, "cannot open \"%s\" for input\n", argv[1] );
-        return 0;
-    }
+  if ( NULL == ( InputFile = fopen( argv[1], "r" ) ) )
+  {
+    fprintf( stderr, "cannot open \"%s\" for input\n", argv[1] );
+    return 0;
+  }
 
-    if ( NULL == ( ListFile = fopen( argv[2], "w" ) ) )
-    {
-        fprintf( stderr, "cannot open \"%s\" for output\n", argv[2] );
-        fclose( InputFile );
-        return 0;
-    }
+  if ( NULL == ( ListFile = fopen( argv[2], "w" ) ) )
+  {
+    fprintf( stderr, "cannot open \"%s\" for output\n", argv[2] );
+    fclose( InputFile );
+    return 0;
+  }
 
-    return 1;
+  return 1;
 }
 
 
@@ -895,9 +896,9 @@ PRIVATE int  OpenFiles( int argc, char *argv[] )
 
 PRIVATE void ReadToEndOfFile( void )
 {
-    if ( CurrentToken.code != ENDOFINPUT )
-    {
-        Error( "Parsing ends here in this program\n", CurrentToken.pos );
-        while ( CurrentToken.code != ENDOFINPUT )  CurrentToken = GetToken();
-    }
+  if ( CurrentToken.code != ENDOFINPUT )
+  {
+    Error( "Parsing ends here in this program\n", CurrentToken.pos );
+    while ( CurrentToken.code != ENDOFINPUT )  CurrentToken = GetToken();
+  }
 }
