@@ -13,8 +13,8 @@
 /*                                                                                       */
 /*       parser1.c                                                                       */
 /*                                                                                       */
-/*       Pure parser for CPL											                 */
-/*         							                                                     */
+/*       Pure parser for CPL								 */
+/*         							                         */
 /*                                                                                       */
 /*                                                                                       */
 /*                                  GRAMMAR                                              */
@@ -28,7 +28,7 @@
 /*        <FormalParameter> :== [ “REF” ] <Variable>                                     */
 /*        <Block> :== “BEGIN” { <Statement> “;” } “END”                                  */
 /*        <Statement> :== <SimpleStatement> | <WhileStatement> | <IfStatement> |         */
-/*		           		<ReadStatement> | <WriteStatement>                               */
+/*		           		<ReadStatement> | <WriteStatement>               */
 /*        <SimpleStatement> :== <VarOrProcName> <RestOfStatement>                        */
 /*        <RestOfStatement> :== <ProcCallList> | <Assignment> | ε                        */
 /*        <ProcCallList> :== “(” <ActualParameter> { “,” <ActualParameter> } “)”         */
@@ -268,7 +268,7 @@ PRIVATE void ParseParameterList( void )
   ParseFormalParameter();
   while (CurrentToken.code == COMMA )
   {
-   	Accept( COMMA );
+    Accept( COMMA );
     ParseFormalParameter();
   }
   Accept( RIGHTPARENTHESIS );
@@ -294,9 +294,9 @@ PRIVATE void ParseParameterList( void )
 
 PRIVATE void ParseFormalParameter( void )
 {
-	if (CurrentToken.code == REF )
-		Accept ( REF );
-	Accept( IDENTIFIER );
+  if (CurrentToken.code == REF )
+    Accept ( REF );
+    Accept( IDENTIFIER );
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
