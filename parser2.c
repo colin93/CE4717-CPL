@@ -13,8 +13,8 @@
 /*                                                                                       */
 /*       parser2.c                                                                       */
 /*                                                                                       */
-/*       Augment S-Algol recovery parser for CPL						                 */
-/*         							                                                     */
+/*       Augment S-Algol recovery parser for CPL					 */
+/*         							                         */
 /*                                                                                       */
 /*                                                                                       */
 /*                                  GRAMMAR                                              */
@@ -28,7 +28,7 @@
 /*        <FormalParameter> :== [ “REF” ] <Variable>                                     */
 /*        <Block> :== “BEGIN” { <Statement> “;” } “END”                                  */
 /*        <Statement> :== <SimpleStatement> | <WhileStatement> | <IfStatement> |         */
-/*		           		<ReadStatement> | <WriteStatement>                               */
+/*		           		<ReadStatement> | <WriteStatement>               */
 /*        <SimpleStatement> :== <VarOrProcName> <RestOfStatement>                        */
 /*        <RestOfStatement> :== <ProcCallList> | <Assignment> | ε                        */
 /*        <ProcCallList> :== “(” <ActualParameter> { “,” <ActualParameter> } “)”         */
