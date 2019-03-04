@@ -794,8 +794,19 @@ PRIVATE void ParseBooleanExpression( void )
 
 PRIVATE void Accept( int ExpectedToken )
 {
+  static int skipping =0;
+  if (skipping)
+  {
+    while( CurrentToken.code!=ExpectedToken && 
+	  CurrentToken.code!=ENDOFINPUT)
+      CurrentToken=GetToken();
+    skipping=0;
+  }
   if ( CurrentToken.code != ExpectedToken )
+  {
     SyntaxError( ExpectedToken, CurrentToken );
+    skipping=1;
+  }
   else
     CurrentToken = GetToken();
 }
