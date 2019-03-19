@@ -281,7 +281,7 @@ PRIVATE void ParseParameterList( void )
   ParseFormalParameter();
   while (CurrentToken.code == COMMA )
   {
-	Accept( COMMA );
+    Accept( COMMA );
     ParseFormalParameter();
   }
   Accept( RIGHTPARENTHESIS );
