@@ -479,10 +479,7 @@ PRIVATE void ParseAssignment( void )
 
 PRIVATE void ParseActualParameter( void )
 {
-  if ( CurrentToken.code == IDENTIFIER )
-    Accept( IDENTIFIER );
-  else
-    ParseExpression();
+  ParseExpression();
 }
 
 /*--------------------------------------------------------------------------*/                                                                        
