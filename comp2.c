@@ -369,7 +369,7 @@ PRIVATE void ParseParameterList( SYMBOL *procedure ) {
   int pcount=1;
   int address = -1;
   Accept( LEFTPARENTHESIS );
-  procedure->ptypes = 0;
+  procedure->ptypes = 0; //initialise value for procedures ptypes
   ParseFormalParameter( procedure , pcount );
   while ( CurrentToken.code == COMMA ) {
     Accept( COMMA );
@@ -378,6 +378,8 @@ PRIVATE void ParseParameterList( SYMBOL *procedure ) {
   }
   Accept( RIGHTPARENTHESIS );
   procedure->pcount = pcount;
+
+  //assign addresses to parameters and pop the from stack
   while ( top != NULL ) {
     top->param->address = address;
     address--;
@@ -394,7 +396,7 @@ PRIVATE void ParseParameterList( SYMBOL *procedure ) {
 /*                                                                          */
 /*                                                                          */
 /*    Inputs:       Pointer to procedure symbol                             */
-/*                  Integer relating to number of parameters in procedure   */
+/*                  Integer relating to position of parameter in procedure  */
 /*                                                                          */
 /*    Outputs:      Assigns value to procedure ptypes                       */
 /*                                                                          */
@@ -561,6 +563,7 @@ PRIVATE void ParseRestOfStatement( SYMBOL *target )
   default:                 /* Assignment as default case for error handling*/
     ParseAssignment();
     if( target != NULL) {
+      //Store based on variable type
       if( target->type == STYPE_VARIABLE )
         Emit( I_STOREA, target->address );
       else if( target->type == STYPE_LOCALVAR ) {
@@ -614,7 +617,7 @@ PRIVATE void ParseRestOfStatement( SYMBOL *target )
 /*--------------------------------------------------------------------------*/
 PRIVATE void ParseProcCallList( SYMBOL *target )
 {
-  int count =1;
+  int count =1;  //parameter position
   Accept( LEFTPARENTHESIS );
   ParseActualParameter( target, count );
   while( CurrentToken.code == COMMA ) {
@@ -622,6 +625,7 @@ PRIVATE void ParseProcCallList( SYMBOL *target )
     count++;
     ParseActualParameter( target, count );
   }
+  //incorrect number of parameters for procedure
   if ( count != target->pcount ) {
     Error( "Wrong number of parameters", CurrentToken.pos );
     KillCodeGeneration();
@@ -675,6 +679,8 @@ PRIVATE void ParseActualParameter( SYMBOL *target, int count )
 {
   int dS, i;
   SYMBOL *param;
+
+  //check if reference parameter
   if( target->ptypes & (1<<(count-1)) ) {
     param = LookupSymbol();
     if ( param->type == STYPE_VARIABLE )
@@ -706,6 +712,7 @@ PRIVATE void ParseActualParameter( SYMBOL *target, int count )
     }
     Accept( IDENTIFIER );
   }
+  //value parameter
   else ParseExpression();
 }
 
@@ -766,6 +773,7 @@ PRIVATE void ParseIfStatement()
   L1BackPatchLoc = ParseBooleanExpression();
   Accept( THEN );
   ParseBlock();
+  //2 backpatches required to solve branch instructions if else statement present
   if( CurrentToken.code == ELSE ) {
     L2BackPatchLoc = CurrentCodeAddress();
     Emit( I_BR, 0);
@@ -805,6 +813,7 @@ PRIVATE void ParseReadStatement()
   var = LookupSymbol();
   _Emit( I_READ );
   
+  //store to variable based on its type
   if( var != NULL) {
     if( var->type == STYPE_VARIABLE )
       Emit( I_STOREA, var->address );
@@ -841,6 +850,8 @@ PRIVATE void ParseReadStatement()
     Accept( COMMA );
     var = LookupSymbol();
     _Emit( I_READ );
+
+    //store to variable based on its type
     if( var != NULL) {
       if( var->type == STYPE_VARIABLE )
         Emit( I_STOREA, var->address );
@@ -929,6 +940,7 @@ PRIVATE void ParseExpression( void )
   int op;
   
   ParseCompoundTerm();
+  //add op grammar
   while( (op=CurrentToken.code) == ADD || op == SUBTRACT ) {
     if( op == SUBTRACT ) Accept( SUBTRACT );
     else Accept( ADD );
@@ -960,6 +972,7 @@ PRIVATE void ParseCompoundTerm()
   int op;
   
   ParseTerm();
+  //mult op grammar
   while( (op=CurrentToken.code) == MULTIPLY || op == DIVIDE ) {
     if( op == MULTIPLY ) Accept( MULTIPLY );
     else Accept( DIVIDE );
@@ -1023,6 +1036,7 @@ PRIVATE void ParseSubTerm( void )
   SYMBOL *var;
   
   switch( CurrentToken.code ) {
+  //loads a variable based on its type
   case( IDENTIFIER ):
   default:
     var = LookupSymbol();
@@ -1055,6 +1069,7 @@ PRIVATE void ParseSubTerm( void )
     }
     Accept( IDENTIFIER );
     break;
+  //load an integer
   case( INTCONST ):
     Emit( I_LOADI, CurrentToken.value );
     Accept( INTCONST );
@@ -1090,6 +1105,7 @@ PRIVATE int ParseBooleanExpression()
   int BackPatchAddr, Instruction;
   ParseExpression();
   
+  //relop grammar
   switch( CurrentToken.code ) {
   case( EQUALITY ):
     Instruction = I_BNZ; Accept( EQUALITY );
@@ -1110,6 +1126,8 @@ PRIVATE int ParseBooleanExpression()
   
   ParseExpression();
   _Emit( I_SUB );
+  
+  //for writing back correct jump address for branch instruction
   BackPatchAddr = CurrentCodeAddress();
   Emit( Instruction, 0 );
   return BackPatchAddr;
@@ -1242,22 +1260,26 @@ PRIVATE void SetupSets( void )
 
 PRIVATE int  OpenFiles( int argc, char *argv[] )
 {
-
+  //check for correct number of inputs
   if ( argc != 4 )  {
     fprintf( stderr, "%s <inputfile> <listfile> <codefile>\n", argv[0] );
     return 0;
   }
 
+  //open inputfile
   if ( NULL == ( InputFile = fopen( argv[1], "r" ) ) )  {
     fprintf( stderr, "cannot open \"%s\" for input\n", argv[1] );
     return 0;
   }
 
+  //open file to ouput input file with any errors marked
   if ( NULL == ( ListFile = fopen( argv[2], "w" ) ) )  {
     fprintf( stderr, "cannot open \"%s\" for output\n", argv[2] );
     fclose( InputFile );
     return 0;
   }
+
+  //open file for writing assembly code
   if (NULL == ( CodeFile = fopen( argv[3], "w") ) ) {
     fprintf( stderr, "cannot open \"%s\" for code generation\n", argv[3]);
     fclose( CodeFile );
@@ -1346,6 +1368,7 @@ PRIVATE SYMBOL *LookupSymbol( void )
 {
   SYMBOL *sptr;
   if( CurrentToken.code == IDENTIFIER ) {
+    //search symbol table for token name
     sptr = Probe( CurrentToken.s, NULL );
     if ( sptr == NULL ) {
       Error("Identifier not declared", CurrentToken.pos);
@@ -1374,6 +1397,7 @@ PRIVATE SYMBOL *LookupSymbol( void )
 PRIVATE void push( SYMBOL *param ) {
   struct Node* temp;
   temp = (struct Node*)malloc(sizeof(struct Node));
+  //check if not enough memory
   if (!temp) {
     printf("\nHeap Overflow\n");
     exit(1);
@@ -1400,6 +1424,7 @@ PRIVATE void push( SYMBOL *param ) {
 /*--------------------------------------------------------------------------*/
 PRIVATE void pop( void ) {
   struct Node* temp;
+  //check that stack not empty
   if( top==NULL) {
     printf("\nStack Underflow\n");
     exit(1);
