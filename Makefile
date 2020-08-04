@@ -21,7 +21,7 @@
 # Name of your local gcc (or other ANSI C compiler).
 CC=gcc
 # Flags to pass to compiler.
-CFLAGS=-ansi -pedantic -Wall -Iheaders
+CFLAGS=-pedantic -Wall -Iheaders
 
 # Name of your code library maintainer (in this case "ar").
 AR=ar 
