@@ -1335,10 +1335,6 @@ PRIVATE SYMBOL *MakeSymbolTableEntry( int symtype, int *varaddress )
         }
         else newsptr->address = -1;
       }
-      printf("SYMBOL -> '%s' created.\nHASH INDEX -> %d.\n"
-			 "SCOPE ->  %d.\nTYPE -> %d.\nADDRESS -> %d\n\n",
-			 cptr,hashindex,newsptr->scope, newsptr->type, newsptr->address);
-      printf("-------------------------------------------\n");
     }
     else {
       Error("Symbol already exists", CurrentToken.pos);

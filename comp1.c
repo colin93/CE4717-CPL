@@ -183,19 +183,19 @@ PRIVATE SYMBOL *LookupSymbol( void );
 
 PUBLIC int main ( int argc, char *argv[] )
 {
-    if ( OpenFiles( argc, argv ) )  {
-        InitCharProcessor( InputFile, ListFile );
-        InitCodeGenerator( CodeFile );
-	SetupSets();
-        CurrentToken = GetToken();
-        ParseProgram();
-        WriteCodeFile();
-        fclose( InputFile );
-        fclose( ListFile );
-        return  EXIT_SUCCESS;
-    }
-    else
-      return EXIT_FAILURE;
+  if ( OpenFiles( argc, argv ) )  {
+    InitCharProcessor( InputFile, ListFile );
+    InitCodeGenerator( CodeFile );
+    SetupSets();
+    CurrentToken = GetToken();
+    ParseProgram();
+    WriteCodeFile();
+    fclose( InputFile );
+    fclose( ListFile );
+    return  EXIT_SUCCESS;
+  }
+  else
+    return EXIT_FAILURE;
 }
 
 
@@ -225,21 +225,21 @@ PUBLIC int main ( int argc, char *argv[] )
 PRIVATE void ParseProgram( void )
 {
   int count;
-    Accept( PROGRAM );
-		MakeSymbolTableEntry(STYPE_PROGRAM);
-    Accept( IDENTIFIER );
-    Accept( SEMICOLON );
-    Synchronise(&DeclarationFS_aug,&DeclarationFBS);
-    if( CurrentToken.code == VAR ) count = ParseDeclarations();
+  Accept( PROGRAM );
+  MakeSymbolTableEntry(STYPE_PROGRAM);
+  Accept( IDENTIFIER );
+  Accept( SEMICOLON );
+  Synchronise(&DeclarationFS_aug,&DeclarationFBS);
+  if( CurrentToken.code == VAR ) count = ParseDeclarations();
+  Synchronise(&ProcDeclarationFS_aug,&DeclarationFBS);
+  while( CurrentToken.code == PROCEDURE ) {
+    ParseProcDeclaration();
     Synchronise(&ProcDeclarationFS_aug,&DeclarationFBS);
-    while( CurrentToken.code == PROCEDURE ) {
-      ParseProcDeclaration();
-      Synchronise(&ProcDeclarationFS_aug,&DeclarationFBS);
-    }
-    Emit(I_INC,count);
-    ParseBlock();
-    Accept( ENDOFPROGRAM );     /* Token "." has name ENDOFPROGRAM          */
-    _Emit( I_HALT );
+  }
+  Emit(I_INC,count);
+  ParseBlock();
+  Accept( ENDOFPROGRAM );     /* Token "." has name ENDOFPROGRAM          */
+  _Emit( I_HALT );
 }
 
 
@@ -1060,28 +1060,24 @@ PRIVATE void MakeSymbolTableEntry( int symtype )
 	oldsptr->scope < scope ) {
       if( oldsptr == NULL) cptr=CurrentToken.s; else cptr = oldsptr->s;
       if(NULL == (newsptr=EnterSymbol( cptr, hashindex ))) {
-        Error("Fatal internal error exiting",CurrentToken.pos);
-				exit(0);
+	Error("Fatal internal error exiting",CurrentToken.pos);
+	exit(0);
       }
       else {
-			if( oldsptr == NULL ) PreserveString();
-			newsptr->scope = scope;
-			newsptr->type = symtype;
-			if( symtype == STYPE_VARIABLE ) {
-				newsptr->address = varaddress; varaddress++;
-			}
-			else newsptr->address = -1;
-			}
-			printf("SYMBOL -> '%s' created.\nHASH INDEX -> %d.\n"
-			 "SCOPE ->  %d.\nTYPE -> %d.\nADDRESS -> %d\n\n",
-			 cptr,hashindex,newsptr->scope, newsptr->type, newsptr->address);
-			printf("-------------------------------------------\n");
-			}
-		else {
-			Error("Symbol already exists", CurrentToken.pos);
-			KillCodeGeneration();
-		}
-	}				      
+	if( oldsptr == NULL ) PreserveString();
+	newsptr->scope = scope;
+	newsptr->type = symtype;
+	if( symtype == STYPE_VARIABLE ) {
+	  newsptr->address = varaddress; varaddress++;
+	}
+	else newsptr->address = -1;
+      }
+    }
+    else {
+      Error("Symbol already exists", CurrentToken.pos);
+      KillCodeGeneration();
+    }
+  }				      
 }
 
 PRIVATE SYMBOL *LookupSymbol( void )

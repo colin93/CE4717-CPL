@@ -66,7 +66,7 @@ sim  :
 	$(MAKE) -C simulator veryclean
 
 clean:
-	$(RM) *.o
+	$(RM) *.o *.lis *.code
 
 veryclean:
-	$(RM) $(CODELIB) *.o parser1 parser2 comp1 comp2 smallparser
+	$(RM) $(CODELIB) *.o parser1 parser2 comp1 comp2 smallparser *.lis *.code
